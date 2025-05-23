@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:5000/api
+
+DELETE  {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "usernamePrefix": "robinaaaves"
+}
