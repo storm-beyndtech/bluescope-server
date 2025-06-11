@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import rateLimit from "express-rate-limit";
 import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -11,7 +12,6 @@ import withdrawalsRoutes from "./routes/withdrawals.js";
 import utilsRoutes from "./routes/utils.js";
 import kycsRoutes from "./routes/kycs.js";
 import planRoutes from "./routes/plans.js";
-import rateLimit from "express-rate-limit";
 
 dotenv.config();
 
