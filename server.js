@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-import rateLimit from "express-rate-limit";
 import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -42,19 +41,7 @@ app.use((req, res, next) => {
 	next();
 });
 
-// Rate limiter for POST requests only
-const postLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000,
-	max: 10,
-	handler: (req, res) => {
-		res.status(429).json({
-			message: "Too many requests, please try again later.",
-		});
-	},
-});
-
 // Middlewares
-app.post("*", postLimiter);
 app.use(cors());
 app.use(express.json());
 app.use("/api/users", usersRoutes);
