@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import express from "express";
-import { User, validateUser, validateLogin } from "../models/user.js";
+import { User } from "../models/user.js";
 import { passwordReset, welcomeMail, otpMail } from "../utils/mailer.js";
 import { Otp } from "../models/otp.js";
 import speakeasy from "speakeasy";
@@ -98,9 +98,6 @@ router.get("/reset-password/:email", async (req, res) => {
 // login user
 router.post("/login", async (req, res) => {
 	const { email, username, password } = req.body;
-	console.log(req.body);
-	const { error } = validateLogin(req.body);
-	if (error) return res.status(400).send({ message: error.details[0].message });
 
 	try {
 		const user = await User.findOne({
@@ -108,45 +105,54 @@ router.post("/login", async (req, res) => {
 		});
 		if (!user) return res.status(400).send({ message: "user not found" });
 
-		const validatePassword = await bcrypt.compare(password, user.password);
+		const validatePassword = bcrypt.compare(password, user.password);
 		if (!validatePassword) return res.status(400).send({ message: "Invalid password" });
 
-		const otp = await new Otp({ email: user.email }).save();
-		const emailData = await otpMail(user.email, otp.code);
-		if (emailData.error) return res.status(400).send({ message: emailData.error });
-
-		res.send({ message: "success" });
+		const { password: _, ...userData } = user.toObject();
+		res.send({ message: "success", user: userData });
 	} catch (error) {
 		for (i in e.errors) res.status(500).send({ message: e.errors[i].message });
 		console.log(e.errors[0].message);
 	}
 });
 
-//sign up
+// signup
 router.post("/signup", async (req, res) => {
-	const { username, email } = req.body;
-
-	const { error } = validateUser(req.body);
-	if (error) return res.status(400).send({ message: error.details[0].message });
-
-	let user = await User.findOne({ $or: [{ email }, { username }] });
-	if (user) return res.status(400).send({ message: "username or email already exists, please login" });
+	const { username, email, password, country, phone } = req.body;
 
 	try {
-		const otp = await new Otp({ email }).save();
-		const emailData = await otpMail(email, otp.code);
-		if (emailData.error) return res.status(400).send({ message: emailData.error });
+		// Check for existing user
+		const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+		if (existingUser) {
+			return res
+				.status(400)
+				.send({ success: false, message: "Username or email already exists. Please login." });
+		}
 
-		res.send({ message: "success" });
+		// Hash password
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
+
+		// Create and save new user
+		const user = new User({ username, email, password: hashedPassword, country, phone });
+		await user.save();
+
+		// Send welcome mail
+		await welcomeMail(user.email);
+
+		// Respond with user (excluding password)
+		const { password: _, ...userData } = user.toObject();
+		return res.send({ success: true, user: userData });
 	} catch (e) {
-		for (i in e.errors) res.status(500).send({ message: e.errors[i].message });
+		console.error(e);
+		const message = e.message || "Something went wrong during signup.";
+		return res.status(500).send({ success: false, message });
 	}
 });
 
 //create a new user
 router.post("/verify-otp", async (req, res) => {
 	const { username, email, password, referredBy, type } = req.body;
-	console.log(req.body);
 	try {
 		let user = await User.findOne({
 			$or: [{ email }, { username }],
@@ -162,15 +168,6 @@ router.post("/verify-otp", async (req, res) => {
 			await user.save();
 
 			await welcomeMail(user.email);
-			return res.send({ user });
-		}
-
-		if (type === "login-verification") {
-			if (!user) return res.status(400).send({ message: "User not found, please register" });
-			console.log(req.body, "2");
-			const validPassword = await bcrypt.compare(password, user.password);
-			if (!validPassword) return res.status(400).send({ message: "Invalid password" });
-
 			return res.send({ user });
 		}
 
@@ -291,27 +288,6 @@ router.delete("/", async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: "Failed to delete users" });
-	}
-});
-
-// PUT /api/user/
-router.put("/update-user-trader", async (req, res) => {
-	try {
-		const { traderId, action, userId } = req.body;
-
-		if (!userId) return res.status(401).json({ message: "Unauthorized" });
-
-		const update = action === "copy" ? { traderId } : { $unset: { traderId: 1 } };
-
-		const updatedUser = await User.findByIdAndUpdate(userId, update, { new: true });
-
-		return res.status(200).json({
-			message: action === "copy" ? "Trader copied" : "Trader uncopied",
-			user: updatedUser,
-		});
-	} catch (error) {
-		console.error("Error updating traderId:", error);
-		return res.status(500).json({ message: "Internal server error" });
 	}
 });
 

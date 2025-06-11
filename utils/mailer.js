@@ -33,20 +33,20 @@ export async function welcomeMail(userEmail) {
 	try {
 		let bodyContent = `
       <td style="padding: 20px; line-height: 1.8;">
-        <p>Welcome to Copyelite!</p>
+        <p>Welcome to Bluescopepty!</p>
         <p>
-          We're thrilled to have you as part of our community. At Copyelite, we are
+          We're thrilled to have you as part of our community. At Bluescopepty, we are
           dedicated to providing the best services and support to our customers.
         </p>
         <p>Best regards</p>
-        <p>The Copyelite Team</p>
+        <p>The Bluescopepty Team</p>
       </td>
     `;
 
 		let mailOptions = {
-			from: `Copyelite ${process.env.SMTP_USER}`,
+			from: `Bluescopepty ${process.env.SMTP_USER}`,
 			to: userEmail,
-			subject: "Welcome to Copyelite!",
+			subject: "Welcome to Bluescopepty!",
 			html: emailTemplate(bodyContent),
 		};
 
@@ -69,15 +69,15 @@ export async function otpMail(userEmail, otp) {
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@interactivecopyelite.com.
+          to our support team at support@bluescopepty.com.
         </p>
         <p>Best regards</p>
-        <p>The Copyelite Team</p>
+        <p>The Bluescopepty Team</p>
       </td>
     `;
 
 		let mailOptions = {
-			from: `Copyelite ${process.env.SMTP_USER}`,
+			from: `Bluescopepty ${process.env.SMTP_USER}`,
 			to: userEmail,
 			subject: "Otp!",
 			html: emailTemplate(bodyContent),
@@ -99,20 +99,20 @@ export async function passwordReset(userEmail) {
           A request was sent for password reset, if this wasn't you please
           contact our customer service. Click the reset link below to proceed
         </p>
-        <a href="https://www.interactivecopyelite.com/reset-password/newPassword">
+        <a href="https://www.bluescopepty.com/reset-password/newPassword">
           Reset Password
         </a>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@interactivecopyelite.com.
+          to our support team at support@bluescopepty.com.
         </p>
         <p>Best regards</p>
-        <p>The Copyelite Team</p>
+        <p>The Bluescopepty Team</p>
       </td>
     `;
 
 		let mailOptions = {
-			from: `Copyelite ${process.env.SMTP_USER}`,
+			from: `Bluescopepty ${process.env.SMTP_USER}`,
 			to: userEmail,
 			subject: "Password Reset!",
 			html: emailTemplate(bodyContent),
@@ -138,7 +138,7 @@ export async function alertAdmin(email, amount, date, type) {
     `;
 
 		let mailOptions = {
-			from: `Copyelite ${process.env.SMTP_USER}`,
+			from: `Bluescopepty ${process.env.SMTP_USER}`,
 			to: process.env.SMTP_USER,
 			subject: "Admin Alert!",
 			html: emailTemplate(bodyContent),
@@ -159,19 +159,19 @@ export async function depositMail(fullName, amount, date, email) {
         <p>Dear ${fullName}</p>
         <p>
           Your deposit of <strong>${amount}</strong>, ${date}, was 
-          successful! Your can now use your funds to trade on Copyelite.
+          successful! Your can now use your funds to trade on Bluescopepty.
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@interactivecopyelite.com.
+          to our support team at support@bluescopepty.com.
         </p>
         <p>Best regards</p>
-        <p>The Copyelite Team</p>
+        <p>The Bluescopepty Team</p>
       </td>
     `;
 
 		let mailOptions = {
-			from: `Copyelite ${process.env.SMTP_USER}`,
+			from: `Bluescopepty ${process.env.SMTP_USER}`,
 			to: email,
 			subject: "Deposit!",
 			html: emailTemplate(bodyContent),
@@ -192,19 +192,19 @@ export async function withdrawalMail(fullName, amount, date, email) {
         <p>Dear ${fullName}</p>
         <p>
           Your Withdrawal of <strong>${amount}</strong>, 
-          ${date}, was successful! Thanks for choosing Copyelite!
+          ${date}, was successful! Thanks for choosing Bluescopepty!
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@interactivecopyelite.com.
+          to our support team at support@bluescopepty.com.
         </p>
         <p>Best regards</p>
-        <p>The Copyelite Team</p>
+        <p>The Bluescopepty Team</p>
       </td>
     `;
 
 		let mailOptions = {
-			from: `Copyelite ${process.env.SMTP_USER}`,
+			from: `Bluescopepty ${process.env.SMTP_USER}`,
 			to: email,
 			subject: "Withdrawal!",
 			html: emailTemplate(bodyContent),
@@ -227,15 +227,15 @@ export async function multiMails(emails, subject, message) {
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@interactivecopyelite.com.
+          to our support team at support@bluescopepty.com.
         </p>
         <p>Best regards</p>
-        <p>The Copyelite Team</p>
+        <p>The Bluescopepty Team</p>
       </td>
     `;
 
 		let mailOptions = {
-			from: `Copyelite ${process.env.SMTP_USER}`,
+			from: `Bluescopepty ${process.env.SMTP_USER}`,
 			to: emails,
 			subject: subject,
 			html: emailTemplate(bodyContent),

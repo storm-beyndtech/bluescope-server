@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 // transaction schema
 const transactionSchema = new mongoose.Schema({
   type: {
@@ -54,8 +53,12 @@ const transactionSchema = new mongoose.Schema({
       default: '',
     },
   },
-  tradeData: {
-    package: {
+  planData: {
+    plan: {
+      type: String,
+      default: '',
+    },
+    duration: {
       type: String,
       default: '',
     },

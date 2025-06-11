@@ -8,10 +8,9 @@ import usersRoutes from "./routes/users.js";
 import transactionsRoutes from "./routes/transactions.js";
 import depositsRoutes from "./routes/deposits.js";
 import withdrawalsRoutes from "./routes/withdrawals.js";
-import tradesRoutes from "./routes/trades.js";
-import traderRoutes from "./routes/traders.js";
 import utilsRoutes from "./routes/utils.js";
 import kycsRoutes from "./routes/kycs.js";
+import planRoutes from "./routes/plans.js";
 import rateLimit from "express-rate-limit";
 
 dotenv.config();
@@ -43,10 +42,10 @@ app.use((req, res, next) => {
 	next();
 });
 
-// Create a rate limiter for POST requests only
+// Rate limiter for POST requests only
 const postLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 10, // Limit each IP to 10 POST requests per 15 minutes
+	windowMs: 15 * 60 * 1000,
+	max: 10,
 	handler: (req, res) => {
 		res.status(429).json({
 			message: "Too many requests, please try again later.",
@@ -62,10 +61,9 @@ app.use("/api/users", usersRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/deposits", depositsRoutes);
 app.use("/api/withdrawals", withdrawalsRoutes);
-app.use("/api/trades", tradesRoutes);
-app.use("/api/trader", traderRoutes);
 app.use("/api/utils", utilsRoutes);
 app.use("/api/kycs", kycsRoutes);
+app.use('/api/plans', planRoutes);
 
 // Listening to port
 const PORT = process.env.PORT || 5000;
