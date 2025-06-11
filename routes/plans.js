@@ -1,5 +1,5 @@
 import express from "express";
-import { Plan } from "../models/Plan.js";
+import { Plan } from "../models/plan.js";
 import { Transaction } from "../models/transaction.js";
 import { User } from "../models/user.js";
 
