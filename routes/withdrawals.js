@@ -156,6 +156,7 @@ router.put("/:id", async (req, res) => {
 		withdrawal.status = status;
 
 		if (status === "approved") {
+			user.deposit -= amount;
 			user.withdraw += amount;
 		}
 
