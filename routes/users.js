@@ -1,8 +1,7 @@
 import bcrypt from "bcrypt";
 import express from "express";
 import { User } from "../models/user.js";
-import { passwordReset, welcomeMail, otpMail } from "../utils/mailer.js";
-import { Otp } from "../models/otp.js";
+import { passwordReset, welcomeMail } from "../utils/mailer.js";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 
@@ -118,7 +117,7 @@ router.post("/login", async (req, res) => {
 
 // signup
 router.post("/signup", async (req, res) => {
-	const { username, email, password, country, phone } = req.body;
+	const { firstName, lastName, username, email, password, country, phone } = req.body;
 
 	try {
 		// Check for existing user
@@ -134,7 +133,7 @@ router.post("/signup", async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, salt);
 
 		// Create and save new user
-		const user = new User({ username, email, password: hashedPassword, country, phone });
+		const user = new User({ firstName, lastName, username, email, password: hashedPassword, country, phone });
 		await user.save();
 
 		// Send welcome mail
@@ -147,49 +146,6 @@ router.post("/signup", async (req, res) => {
 		console.error(e);
 		const message = e.message || "Something went wrong during signup.";
 		return res.status(500).send({ success: false, message });
-	}
-});
-
-//create a new user
-router.post("/verify-otp", async (req, res) => {
-	const { username, email, password, referredBy, type } = req.body;
-	try {
-		let user = await User.findOne({
-			$or: [{ email }, { username }],
-		});
-
-		if (type === "register-verification") {
-			if (user) return res.status(400).send({ message: "User already exists, please login" });
-
-			const salt = await bcrypt.genSalt(10);
-			const hashedPassword = await bcrypt.hash(password, salt);
-
-			user = new User({ username, email, password: hashedPassword, referredBy });
-			await user.save();
-
-			await welcomeMail(user.email);
-			return res.send({ user });
-		}
-
-		return res.status(400).send({ message: "Invalid type. Must be 'register' or 'login'" });
-	} catch (e) {
-		console.error(e);
-		return res.status(500).send({ message: "Server error" });
-	}
-});
-
-//resend - otp
-router.post("/resend-otp", async (req, res) => {
-	const { email } = req.body;
-
-	try {
-		const otp = await new Otp({ email }).save();
-		const emailData = await otpMail(email, otp.code);
-		if (emailData.error) return res.status(400).send({ message: emailData.error });
-
-		res.send({ message: "success" });
-	} catch (e) {
-		for (i in e.errors) res.status(500).send({ message: e.errors[i].message });
 	}
 });
 

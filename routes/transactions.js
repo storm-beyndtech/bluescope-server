@@ -34,8 +34,23 @@ router.get('/', async (req, res) => {
   catch(e){ for(i in e.errors) res.status(500).send({message: e.errors[i].message}) }
 });
 
+// getting all deposits
+router.get('/deposits', async(req, res) => {
+  try {
+    const deposits = await Transaction.find({ type: "deposit" })
+    res.send(deposits)
+  } catch(e){ for(i in e.errors) res.status(500).send({message: e.errors[i].message}) }
+})
 
-
+// getting all withdrawals
+router.get("/withdrawals", async (req, res) => {
+	try {
+		const withdrawals = await Transaction.find({ type: "withdrawal" });
+		res.send(withdrawals);
+	} catch (e) {
+		for (i in e.errors) res.status(500).send({ message: e.errors[i].message });
+	}
+});
 
 // get all transactions by user
 router.get('/user/:email', async(req, res) => {

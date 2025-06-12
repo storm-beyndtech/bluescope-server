@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
 export const userSchema = new mongoose.Schema({
-	firstName: { type: String, maxLength: 30 },
-	lastName: { type: String, maxLength: 30 },
+	firstName: { type: String, maxLength: 30, required: true },
+	lastName: { type: String, maxLength: 30, required: true },
 	fullName: {
 		type: String,
 		maxLength: 60,
@@ -80,15 +80,27 @@ export const userSchema = new mongoose.Schema({
 		default: 0,
 		minLength: 0,
 	},
-	referredBy: {
-		type: String,
-		default: "",
-		maxLength: 50,
-	},
 	profileImage: {
 		type: String,
 		default: "",
 		maxLength: 500,
+	},
+	referral: {
+		type: {
+			code: String,
+			status: { type: String, enum: ["claimed", "none", "pending"], default: "none" },
+		},
+		default: () => ({ code: "", status: "none" }),
+	},
+	kycStatus: {
+		type: String,
+		enum: ["notSubmitted", "pending", "approved", "rejected"],
+		default: "notSubmitted",
+	},
+	accountStatus: {
+		type: String,
+		enum: ["active", "pending", "suspended", "deactivated"],
+		default: "active",
 	},
 	isAdmin: {
 		type: Boolean,
@@ -99,6 +111,10 @@ export const userSchema = new mongoose.Schema({
 		default: false,
 	},
 	idVerified: {
+		type: Boolean,
+		default: false,
+	},
+	isEmailVerified: {
 		type: Boolean,
 		default: false,
 	},
