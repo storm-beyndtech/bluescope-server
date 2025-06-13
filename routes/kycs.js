@@ -60,6 +60,10 @@ router.post("/", upload.fields([{ name: "documentFront" }, { name: "documentBack
 	const existingKyc = await Kyc.findOne({ $or: [{ email }, { documentNumber }] });
 	if (existingKyc) return res.status(400).send({ message: "KYC already exists." });
 
+	// Prevent duplicates
+	const user = await User.findOne({ email });
+	if (!user) return res.status(400).send({ message: "user not found." });
+
 	// Get uploaded file URLs
 	const files = req.files;
 	const documentFront = files?.documentFront?.[0]?.path || "";
@@ -74,9 +78,11 @@ router.post("/", upload.fields([{ name: "documentFront" }, { name: "documentBack
 		documentBack,
 	});
 
+	user.kycStatus = "pending";
+
 	try {
-		const result = await newKyc.save();
-		res.send(result);
+		await Promise.all([user.save(), newKyc.save()]);
+		res.send({message: "Kyc submitted successfully"});
 	} catch (e) {
 		console.error(e);
 		res.status(500).send({ message: "Something went wrong." });
@@ -99,6 +105,7 @@ router.put("/", async (req, res) => {
 
 		// ✅ Update user fields from KYC
 		user.idVerified = true;
+		user.kycStatus = "approved";
 		user.documentNumber = userKyc.documentNumber;
 		user.documentExpDate = userKyc.documentExpDate;
 		user.documentFront = userKyc.documentFront;
