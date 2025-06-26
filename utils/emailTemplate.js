@@ -6,7 +6,7 @@ export function emailTemplate(bodyContent) {
           <table role="presentation" width="100%" max-width="600px" bgcolor="#ffffff" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
             <tr>
               <td align="center" style="padding: 20px; background: #13160F;">
-                <img src="https://res.cloudinary.com/ddb1vjioq/image/upload/v1748954610/bluescope_v0uozb.png" width="120" alt="Company Logo" style="display: block;">
+                <img src="https://res.cloudinary.com/ddb1vjioq/image/upload/v1750943964/email-logo_yc45jm.png" width="120" alt="Company Logo" style="display: block;">
               </td>
             </tr>
 
