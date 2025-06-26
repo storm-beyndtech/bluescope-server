@@ -69,7 +69,7 @@ export async function otpMail(userEmail, otp) {
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@Bluevestapty.com.
+          to our support team at support@bluevestapty.club.
         </p>
         <p>Best regards</p>
         <p>The Bluevestapty Team</p>
@@ -104,7 +104,7 @@ export async function passwordReset(userEmail) {
         </a>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@Bluevestapty.com.
+          to our support team at support@bluevestapty.club.
         </p>
         <p>Best regards</p>
         <p>The Bluevestapty Team</p>
@@ -163,7 +163,7 @@ export async function depositMail(fullName, amount, date, email) {
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@Bluevestapty.com.
+          to our support team at support@bluevestapty.club.
         </p>
         <p>Best regards</p>
         <p>The Bluevestapty Team</p>
@@ -196,7 +196,7 @@ export async function withdrawalMail(fullName, amount, date, email) {
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@Bluevestapty.com.
+          to our support team at support@bluevestapty.club.
         </p>
         <p>Best regards</p>
         <p>The Bluevestapty Team</p>
@@ -227,7 +227,7 @@ export async function multiMails(emails, subject, message) {
         </p>
         <p>
           If you have questions or need assistance, reach out 
-          to our support team at support@Bluevestapty.com.
+          to our support team at support@bluevestapty.club.
         </p>
         <p>Best regards</p>
         <p>The Bluevestapty Team</p>
