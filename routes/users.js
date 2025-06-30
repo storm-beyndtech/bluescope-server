@@ -211,41 +211,28 @@ router.put("/update-profile", upload.single("profileImage"), async (req, res) =>
 	}
 });
 
-//Delete multi users
-router.delete("/", async (req, res) => {
-	const { userIds, usernamePrefix, emailPrefix } = req.body;
+// Delete single user by email
+router.delete("/:email", async (req, res) => {
+	const { email } = req.params;
 
-	// Build the filter dynamically
-	const filter = {};
-
-	// Filter by IDs if provided
-	if (Array.isArray(userIds) && userIds.length > 0) {
-		filter._id = { $in: userIds };
-	}
-
-	// Filter by username prefix if provided
-	if (usernamePrefix) {
-		filter.username = { $regex: `^${usernamePrefix}`, $options: "i" }; // Case-insensitive match
-	}
-
-	// Filter by email prefix if provided
-	if (emailPrefix) {
-		filter.email = { $regex: `^${emailPrefix}`, $options: "i" }; // Case-insensitive match
-	}
-
-	// Check if the filter is empty
-	if (Object.keys(filter).length === 0) {
-		return res.status(400).json({ error: "No valid filter criteria provided" });
+	if (!email) {
+		return res.status(400).json({ error: "Email is required" });
 	}
 
 	try {
-		const result = await User.deleteMany(filter);
+		const result = await User.deleteOne({ email });
+
+		if (result.deletedCount === 0) {
+			return res.status(404).json({ error: "User not found" });
+		}
+
 		res.json({ success: true, deletedCount: result.deletedCount });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: "Failed to delete users" });
+		res.status(500).json({ error: "Failed to delete user" });
 	}
 });
+
 
 // Veryify 2FA for user
 router.post("/verifyToken", async (req, res) => {
