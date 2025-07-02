@@ -120,6 +120,19 @@ router.put("/:id", async (req, res) => {
 
 		if (status === "approved") {
 			user.deposit += amount;
+
+			// 💰 Reward the referrer with 5% if exists
+			if (user.referral.code !== "") {
+				const referrer = await User.findOne({
+					username: user.referral.code,
+				});
+
+				if (referrer) {
+					const bonus = 0.05 * amount;
+					referrer.deposit += bonus;
+					await referrer.save();
+				}
+			}
 		}
 
 		await user.save();

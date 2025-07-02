@@ -117,7 +117,7 @@ router.post("/login", async (req, res) => {
 
 // signup
 router.post("/signup", async (req, res) => {
-	const { firstName, lastName, username, email, password, country, phone } = req.body;
+	const { firstName, lastName, username, email, password, country, phone, referrer } = req.body;
 
 	try {
 		// Check for existing user
@@ -133,7 +133,16 @@ router.post("/signup", async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, salt);
 
 		// Create and save new user
-		const user = new User({ firstName, lastName, username, email, password: hashedPassword, country, phone });
+    const user = new User({ firstName, lastName, username, email, password: hashedPassword, country, phone });
+    if (referrer) {
+      const referrerUser = await User.findOne({ username: referrer });
+      if (referrerUser) {
+        user.referral = {
+          code: referrerUser.username,
+          status: "pending",
+        };
+      }
+    }
 		await user.save();
 
 		// Send welcome mail
