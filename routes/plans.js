@@ -2,6 +2,7 @@ import express from "express";
 import { Plan } from "../models/plan.js";
 import { Transaction } from "../models/transaction.js";
 import { User } from "../models/user.js";
+import { alertAdmin, investmentApproved, investmentCompleted, investmentRejected, investmentRequested } from "../utils/mailer.js";
 
 const router = express.Router();
 
@@ -165,8 +166,8 @@ router.post("/invest", async (req, res) => {
 
 		// Check if user has sufficient balance
 		if (user.deposit < amount) {
-			return res.status(400).json({ 
-				message: `Insufficient balance. Available: $${user.deposit}` 
+			return res.status(400).json({
+				message: `Insufficient balance. Available: $${user.deposit}`,
 			});
 		}
 
@@ -192,16 +193,16 @@ router.post("/invest", async (req, res) => {
 		});
 
 		await transaction.save();
-
+		await investmentRequested(user.email, user.fullName, amount, transaction.date, plan.name);
+		await alertAdmin(user.email, amount, transaction.date, "investment");
 		res.status(201).json({
 			message: "Investment created successfully",
-			remainingBalance: user.deposit
+			remainingBalance: user.deposit,
 		});
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
 });
-
 
 // PUT /api/plans/investment/:id - Update investment status (Admin)
 router.put("/investment/:id", async (req, res) => {
@@ -214,21 +215,37 @@ router.put("/investment/:id", async (req, res) => {
 			return res.status(404).json({ message: "Investment not found" });
 		}
 
+		// Find user and update their balance
+		const user = await User.findById(transaction.user.id);
+		if (!user) {
+			return res.status(404).json({ message: "User not found" });
+		}
+
 		// Update status
 		transaction.status = status;
+
+    if (status === "rejected") {
+      // If rejected, refund amount to user balance
+      user.deposit += Number(transaction.amount);
+      transaction.amount = 0;
+      await user.save();
+      await investmentRejected(user.email, user.fullName, transaction.amount, transaction.date, transaction.planData.plan);
+		}
+		if (status === "approved") {
+      await investmentApproved(user.email, user.fullName, transaction.amount, transaction.date, transaction.planData.plan);
+		}
 
 		// If completed, add interest to amount and fund user balance
 		if (status === "completed") {
 			const interestAmount = (transaction.amount * transaction.planData.interest) / 100;
 
-			// Find user and update their balance
-      const user = await User.findById(transaction.user.id);
-      
 			if (user) {
-				user.deposit += Number(transaction.amount); 
-				user.interest += Number(interestAmount); 
+				user.deposit += Number(transaction.amount);
+				user.interest += Number(interestAmount);
 				await user.save();
-			}
+      }
+      
+      await investmentCompleted(user.email, user.fullName, transaction.amount, transaction.date, transaction.planData.plan);
 		}
 
 		await transaction.save();

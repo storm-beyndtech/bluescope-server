@@ -1,7 +1,7 @@
 import express from "express";
 import { Transaction } from "../models/transaction.js";
 import { User } from "../models/user.js";
-import { alertAdmin, depositMail } from "../utils/mailer.js";
+import { alertAdmin, depositRequested, depositStatus, referralCommission } from "../utils/mailer.js";
 
 const router = express.Router();
 
@@ -92,11 +92,9 @@ router.post("/", async (req, res) => {
 		await transaction.save();
 
 		// Send admin alert
-		try {
-			await alertAdmin(user.email, amount, transaction.date, "deposit");
-		} catch (emailError) {
-			console.log("Email notification failed");
-		}
+		await alertAdmin(user.email, amount, transaction.date, "deposit");
+		// Send deposit email
+		await depositRequested(user.email, user.fullName, amount, transaction.date);
 
 		res.json({ message: "Deposit successful and pending approval..." });
 	} catch (e) {
@@ -131,6 +129,7 @@ router.put("/:id", async (req, res) => {
 					const bonus = 0.05 * amount;
 					referrer.deposit += bonus;
 					await referrer.save();
+					await referralCommission(referrer.email, referrer.fullName, bonus, deposit.date, user.fullName);
 				}
 			}
 		}
@@ -140,11 +139,9 @@ router.put("/:id", async (req, res) => {
 
 		// Send confirmation email
 		if (status === "approved") {
-			try {
-				await depositMail(user.username, amount, deposit.date, user.email);
-			} catch (emailError) {
-				console.log("Email notification failed");
-			}
+			await depositStatus(user.email, user.fullName, amount, deposit.date, true);
+		} else {
+			await depositStatus(user.email, user.fullName, amount, deposit.date, false);
 		}
 
 		res.json({ message: "Deposit successfully updated" });

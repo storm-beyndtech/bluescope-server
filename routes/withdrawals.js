@@ -1,7 +1,7 @@
 import express from "express";
 import { Transaction } from "../models/transaction.js";
 import { User } from "../models/user.js";
-import { alertAdmin, withdrawalMail } from "../utils/mailer.js";
+import { alertAdmin, withdrawRequested, withdrawStatus } from "../utils/mailer.js";
 
 const router = express.Router();
 
@@ -129,11 +129,9 @@ router.post("/", async (req, res) => {
 		await transaction.save();
 
 		// Send admin alert
-		try {
-			await alertAdmin(user.email, amount, transaction.date, "withdrawal");
-		} catch (emailError) {
-			console.log("Email notification failed");
-		}
+		await alertAdmin(user.email, amount, transaction.date, "withdrawal");
+		// Send withdrawal email
+		await withdrawRequested(user.email, user.fullName, amount, transaction.date);
 
 		res.json({ message: "Withdrawal successful and pending approval..." });
 	} catch (e) {
@@ -165,11 +163,9 @@ router.put("/:id", async (req, res) => {
 
 		// Send confirmation email
 		if (status === "approved") {
-			try {
-				await withdrawalMail(user.username, amount, withdrawal.date, user.email);
-			} catch (emailError) {
-				console.log("Email notification failed");
-			}
+			await withdrawStatus(user.email, user.fullName, amount, withdrawal.date, true);
+		} else {
+			await withdrawStatus(user.email, user.fullName, amount, withdrawal.date, false);
 		}
 
 		res.json({ message: "Withdrawal successfully updated" });

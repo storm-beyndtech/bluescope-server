@@ -5,6 +5,7 @@ import { Kyc, validateKyc } from "../models/kyc.js";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { kycRejected, kycRequested, welcomeMail } from "../utils/mailer.js";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -81,8 +82,8 @@ router.post("/", upload.fields([{ name: "documentFront" }, { name: "documentBack
 	user.kycStatus = "pending";
 
 	try {
-		await Promise.all([user.save(), newKyc.save()]);
-		res.send({message: "Kyc submitted successfully"});
+		await Promise.all([user.save(), newKyc.save(), kycRequested(user.email, user.fullName)]);
+		res.send({ message: "Kyc submitted successfully" });
 	} catch (e) {
 		console.error(e);
 		res.status(500).send({ message: "Something went wrong." });
@@ -91,7 +92,7 @@ router.post("/", upload.fields([{ name: "documentFront" }, { name: "documentBack
 
 // approving a kyc
 router.put("/", async (req, res) => {
-	const { email, kyc } = req.body;
+	const { email, kyc, kycStatus } = req.body;
 
 	try {
 		const user = await User.findOne({ email });
@@ -100,16 +101,22 @@ router.put("/", async (req, res) => {
 		if (!user) return res.status(404).send({ message: "User not found..." });
 		if (!userKyc) return res.status(404).send({ message: "KYC not found..." });
 
-		// ✅ Approve KYC
-		userKyc.status = true;
+		// ✅ Approve/Reject KYC
+		userKyc.status = kycStatus;
 
 		// ✅ Update user fields from KYC
-		user.idVerified = true;
-		user.kycStatus = "approved";
-		user.documentNumber = userKyc.documentNumber;
-		user.documentExpDate = userKyc.documentExpDate;
-		user.documentFront = userKyc.documentFront;
-		user.documentBack = userKyc.documentBack;
+		user.idVerified = kycStatus;
+		user.kycStatus = kycStatus ? "approved" : "rejected";
+
+		if (kycStatus) {
+			user.documentNumber = userKyc.documentNumber;
+			user.documentExpDate = userKyc.documentExpDate;
+			user.documentFront = userKyc.documentFront;
+			user.documentBack = userKyc.documentBack;
+			await welcomeMail(user.email, user.fullName);
+		} else {
+			await kycRejected(user.email, user.fullName);
+		}
 
 		await Promise.all([user.save(), userKyc.save()]);
 

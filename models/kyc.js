@@ -4,10 +4,8 @@ import mongoose from "mongoose";
 // Kyc schema
 const kycSchema = new mongoose.Schema({
 	name: {
-		type: String,
-		required: true,
-		minLength: 5,
-		maxLength: 225,
+    type: String,
+    default: "",
 	},
 	email: {
 		type: String,
@@ -31,10 +29,10 @@ export const Kyc = mongoose.model("Kyc", kycSchema);
 // validate Kyc
 export function validateKyc(kyc) {
 	const schema = Joi.object({
-		name: Joi.string().min(5).max(225).required(),
+		name: Joi.string().allow(" "),
 		email: Joi.string().email().min(5).max(225).required(),
 		documentNumber: Joi.string().min(3).max(50).required(),
-		documentExpDate: Joi.string().required(), // optionally add pattern for date
+		documentExpDate: Joi.string().required(),
 	});
 	return schema.validate(kyc);
 }
