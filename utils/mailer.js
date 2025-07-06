@@ -293,7 +293,7 @@ export async function balanceCredited(userEmail, fullName, amount, date) {
         <p>Dear ${fullName},</p>
         <p>Your Account has been Credited</p>
         <p>
-          Your account has been credited with <strong>${amount}</strong> on ${date}.
+          Your account has been credited with <strong>$${amount}</strong> on ${date}.
         </p>
         <p>
           If you have questions or need assistance, reach out 
@@ -326,7 +326,7 @@ export async function balanceDebited(userEmail, fullName, amount, date) {
         <p>Dear ${fullName},</p>
         <p>Your Account has been Debited</p>
         <p>
-          Your account has been debited with <strong>${amount}</strong> on ${date}.
+          Your account has been debited with <strong>$${amount}</strong> on ${date}.
         </p>
         <p>
           If you have questions or need assistance, reach out 
@@ -359,7 +359,7 @@ export async function depositRequested(userEmail, fullName, amount, date) {
         <p>Dear ${fullName},</p>
         <p>Deposit Request Submitted Successfully</p>
         <p>
-          Your deposit request of <strong>${amount}</strong> has been submitted successfully on ${date}.
+          Your deposit request of <strong>$${amount}</strong> has been submitted successfully on ${date}.
           We will process your request shortly.
         </p>
         <p>
@@ -397,7 +397,7 @@ export async function depositStatus(userEmail, fullName, amount, date, success) 
           <p>Dear ${fullName},</p>
           <p>Your Deposit is Approved</p>
           <p>
-            Your deposit of <strong>${amount}</strong> has been approved and processed on ${date}.
+            Your deposit of <strong>$${amount}</strong> has been approved and processed on ${date}.
             You can now use your funds to trade on Bluevestapty.
           </p>
           <p>
@@ -415,7 +415,7 @@ export async function depositStatus(userEmail, fullName, amount, date, success) 
           <p>Dear ${fullName},</p>
           <p>Your Deposit Request is Rejected</p>
           <p>
-            Your deposit request of <strong>${amount}</strong> submitted on ${date} has been rejected.
+            Your deposit request of <strong>$${amount}</strong> submitted on ${date} has been rejected.
           </p>
           <p>
             Please contact our support team for more information.
@@ -452,7 +452,7 @@ export async function withdrawRequested(userEmail, fullName, amount, date) {
         <p>Dear ${fullName},</p>
         <p>Withdraw Request Submitted Successfully</p>
         <p>
-          Your withdrawal request of <strong>${amount}</strong> has been submitted successfully on ${date}.
+          Your withdrawal request of <strong>$${amount}</strong> has been submitted successfully on ${date}.
           We will process your request shortly.
         </p>
         <p>
@@ -490,7 +490,7 @@ export async function withdrawStatus(userEmail, fullName, amount, date, success)
           <p>Dear ${fullName},</p>
           <p>Withdraw Request has been Processed and your money is sent</p>
           <p>
-            Your withdrawal of <strong>${amount}</strong> has been processed successfully on ${date}.
+            Your withdrawal of <strong>$${amount}</strong> has been processed successfully on ${date}.
             The funds have been sent to your designated account.
           </p>
           <p>
@@ -508,7 +508,7 @@ export async function withdrawStatus(userEmail, fullName, amount, date, success)
           <p>Dear ${fullName},</p>
           <p>Withdraw Request has been Rejected and your money is refunded to your account</p>
           <p>
-            Your withdrawal request of <strong>${amount}</strong> submitted on ${date} has been rejected.
+            Your withdrawal request of <strong>$${amount}</strong> submitted on ${date} has been rejected.
             The funds have been refunded to your account.
           </p>
           <p>
@@ -546,7 +546,7 @@ export async function interestAdded(userEmail, fullName, amount, date) {
         <p>Dear ${fullName},</p>
         <p>Interest added to your balance</p>
         <p>
-          Interest of <strong>${amount}</strong> has been added to your balance on ${date}.
+          Interest of <strong>$${amount}</strong> has been added to your balance on ${date}.
         </p>
         <p>
           If you have questions or need assistance, reach out 
@@ -579,7 +579,7 @@ export async function investmentRequested(userEmail, fullName, amount, date, inv
         <p>Dear ${fullName},</p>
         <p>Investment Request Submitted Successfully</p>
         <p>
-          Your investment request${investmentType ? ` for ${investmentType}` : ''} of <strong>${amount}</strong> 
+          Your investment request${investmentType ? ` for ${investmentType}` : ''} of <strong>$${amount}</strong> 
           has been submitted successfully on ${date}. We will process your request shortly.
         </p>
         <p>
@@ -616,7 +616,7 @@ export async function investmentCompleted(userEmail, fullName, amount, date, inv
         <p>Dear ${fullName},</p>
         <p>Investment successfully completed</p>
         <p>
-          Your investment${investmentType ? ` in ${investmentType}` : ""} of <strong>${amount}</strong> 
+          Your investment${investmentType ? ` in ${investmentType}` : ""} of <strong>$${amount}</strong> 
           has been successfully completed on ${date}.
         </p>
         <p>
@@ -650,7 +650,7 @@ export async function investmentApproved(userEmail, fullName, amount, date, inve
         <p>Dear ${fullName},</p>
         <p>Investment Approved</p>
         <p>
-          Your investment${investmentType ? ` in ${investmentType}` : ''} of <strong>${amount}</strong> 
+          Your investment${investmentType ? ` in ${investmentType}` : ''} of <strong>$${amount}</strong> 
           has been approved on ${date}. Your investment is now active and earning returns.
         </p>
         <p>
@@ -687,7 +687,7 @@ export async function investmentRejected(userEmail, fullName, amount, date, inve
         <p>Dear ${fullName},</p>
         <p>Investment Request Rejected</p>
         <p>
-          Your investment request${investmentType ? ` for ${investmentType}` : ''} of <strong>${amount}</strong> 
+          Your investment request${investmentType ? ` for ${investmentType}` : ''} of <strong>$${amount}</strong> 
           submitted on ${date} has been rejected. The funds have been refunded to your account.
         </p>
         <p>
@@ -725,7 +725,7 @@ export async function referralCommission(userEmail, fullName, amount, date, refe
         <p>Dear ${fullName},</p>
         <p>Referral Commission</p>
         <p>
-          You have earned a referral commission of <strong>${amount}</strong> on ${date}.
+          You have earned a referral commission of <strong>$${amount}</strong> on ${date}.
           ${referredName ? `Thank you for referring ${referredName}!` : "Thank you for your referral!"}
         </p>
         <p>
@@ -785,7 +785,7 @@ export async function alertAdmin(email, amount, date, type) {
 		let bodyContent = `
       <td style="padding: 20px; line-height: 1.8;">
         <p>
-            A ${type} request of $${amount} was initiated 
+            A ${type} request of <strong>$${amount}</strong> was initiated 
             by a user with this email: ${email}, date: ${date}
         </p>
       </td>
