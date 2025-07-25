@@ -149,12 +149,22 @@ router.put("/:id", async (req, res) => {
 		if (!withdrawal) return res.status(404).json({ message: "Withdrawal not found" });
 
 		let user = await User.findOne({ email });
-		if (!user) return res.status(400).json({ message: "Something went wrong" });
+		if (!user) return res.status(400).json({ message: "User not found..." });
 
 		withdrawal.status = status;
 
 		if (status === "approved") {
-			user.deposit -= amount;
+			const totalBalance = user.deposit + user.interest;
+      if (amount > totalBalance) return res.status(400).json({ message: "Insufficient balance." });
+      
+			if (user.deposit >= amount) {
+				user.deposit -= amount;
+			} else {
+				const remaining = amount - user.deposit;
+				user.deposit = 0;
+				user.interest -= remaining;
+			}
+
 			user.withdraw += amount;
 		}
 
