@@ -145,7 +145,7 @@ router.delete("/:id", async (req, res) => {
 // POST /api/plans/invest - Create investment (User)
 router.post("/invest", async (req, res) => {
 	try {
-		const { planId, amount, userId } = req.body;
+		const { planId, amount, userId, interest } = req.body;
 
 		// Get plan
 		const plan = await Plan.findById(planId);
@@ -188,7 +188,7 @@ router.post("/invest", async (req, res) => {
 			planData: {
 				plan: plan.name,
 				duration: plan.duration,
-				interest: plan.roi,
+				interest: interest || (amount * plan.roi) / 100,
 			},
 		});
 
@@ -237,11 +237,9 @@ router.put("/investment/:id", async (req, res) => {
 
 		// If completed, add interest to amount and fund user balance
 		if (status === "completed") {
-			const interestAmount = (transaction.amount * transaction.planData.interest) / 100;
-
 			if (user) {
 				user.deposit += Number(transaction.amount);
-				user.interest += Number(interestAmount);
+				user.interest += Number(transaction.planData.interest);
 				await user.save();
       }
       
