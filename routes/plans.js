@@ -2,7 +2,13 @@ import express from "express";
 import { Plan } from "../models/plan.js";
 import { Transaction } from "../models/transaction.js";
 import { User } from "../models/user.js";
-import { alertAdmin, investmentApproved, investmentCompleted, investmentRejected, investmentRequested } from "../utils/mailer.js";
+import {
+	alertAdmin,
+	investmentApproved,
+	investmentCompleted,
+	investmentRejected,
+	investmentRequested,
+} from "../utils/mailer.js";
 
 const router = express.Router();
 
@@ -224,15 +230,27 @@ router.put("/investment/:id", async (req, res) => {
 		// Update status
 		transaction.status = status;
 
-    if (status === "rejected") {
-      // If rejected, refund amount to user balance
-      user.deposit += Number(transaction.amount);
-      transaction.amount = 0;
-      await user.save();
-      await investmentRejected(user.email, user.fullName, transaction.amount, transaction.date, transaction.planData.plan);
+		if (status === "rejected") {
+			// If rejected, refund amount to user balance
+			user.deposit += Number(transaction.amount);
+			transaction.amount = 0;
+			await user.save();
+			await investmentRejected(
+				user.email,
+				user.fullName,
+				transaction.amount,
+				transaction.date,
+				transaction.planData.plan,
+			);
 		}
 		if (status === "approved") {
-      await investmentApproved(user.email, user.fullName, transaction.amount, transaction.date, transaction.planData.plan);
+			await investmentApproved(
+				user.email,
+				user.fullName,
+				transaction.amount,
+				transaction.date,
+				transaction.planData.plan,
+			);
 		}
 
 		// If completed, add interest to amount and fund user balance
@@ -241,9 +259,15 @@ router.put("/investment/:id", async (req, res) => {
 				user.deposit += Number(transaction.amount);
 				user.interest += Number(transaction.planData.interest);
 				await user.save();
-      }
-      
-      await investmentCompleted(user.email, user.fullName, transaction.amount, transaction.date, transaction.planData.plan);
+			}
+
+			await investmentCompleted(
+				user.email,
+				user.fullName,
+				transaction.amount,
+				transaction.date,
+				transaction.planData.plan,
+			);
 		}
 
 		await transaction.save();
